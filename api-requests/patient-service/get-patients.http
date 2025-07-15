@@ -1,0 +1,9 @@
+### GET request to get all patients
+GET http://localhost:4000/patients
+
+--------------------------------------------------------
+
+### Get a patient by ID
+GET http://localhost:4000/patients/2cd42f95-f7c1-47b2-8e39-4a84305557da
+
+
