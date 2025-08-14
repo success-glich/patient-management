@@ -4,6 +4,9 @@ GET http://localhost:4000/patients
 --------------------------------------------------------
 
 ### Get a patient by ID
-GET http://localhost:4000/patients/2cd42f95-f7c1-47b2-8e39-4a84305557da
+GET http://localhost:4000/patients/4815ca5a-5080-4e78-b214-92db550bdb3e
 
 
+
+### DELETE request to delete a patient
+DELETE http://localhost:4000/patients/e1f45a5b-c3e3-4d83-8098-a41224b97c05
