@@ -22,7 +22,7 @@ services:
       KAFKA_CFG_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: 'true'
     healthcheck:
-      test: ["CMD-SHELL", "kafka-topics.sh --bootstrap-server localhost:9092 --list"]
+      test: [ "CMD-SHELL", "kafka-topics.sh --bootstrap-server localhost:9092 --list" ]
       interval: 10s
       timeout: 10s
       retries: 10
@@ -54,6 +54,25 @@ services:
     networks:
       - patient-management
 
+  auth-service:
+    build: ./auth-service
+    container_name: auth-service
+    ports:
+      - "4005:4005"
+    depends_on:
+      - "auth-service-db"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://auth-service-db:5432/user-db
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin
+      SPRING_SECURITY_USER_NAME: admin
+      SPRING_SECURITY_USER_PASSWORD: admin
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_SQL_INIT_MODE: always
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+    networks:
+      - patient-management
+
   analytics-service:
     build: ./analytics-service
     container_name: analytics-service
@@ -75,15 +94,13 @@ services:
     container_name: patient-service
 
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://patient_db:5432/patient_db
+      SPRING_DATASOURCE_URL: jdbc:postgresql://patient_db:5001/user_db
       SPRING_DATASOURCE_USERNAME: admin
       SPRING_DATASOURCE_PASSWORD: admin
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_SQL_INIT_MODE: always
+
       SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      BILLING_SERVICE_ADDRESS: billing-service
-      BILLING_SERVICE_GRPC_PORT: 9001
 
     depends_on:
       - patient-db
@@ -114,6 +131,21 @@ services:
       - pgdata:/var/lib/postgresql/data
     networks:
       - patient-management
+
+  auth-service-db:
+    image: postgres:latest
+    container_name: auth-service-db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: user-db
+    ports:
+      - "5001:5432"
+    volumes:
+          - /home/success/Desktop/patient-management/db-data/users:/var/lib/postgresql/data
+    networks:
+      - patient-management
+
 
 volumes:
   pgdata:
